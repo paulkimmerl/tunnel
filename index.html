@@ -180,14 +180,14 @@ function updateTunnel(time){
   lights.forEach(l => l.update(delta));
 }
 
-// --- PostMessage für CameraView ---
+// --- PostMessage für CameraView (jetzt korrekt mit parent.postMessage) ---
 window.addEventListener("message", (event) => {
   if(event.data.type === "getCameraView") {
     renderer.domElement.toBlob(blob => {
       const reader = new FileReader();
       reader.onload = () => {
-        // send back the image as data URL
-        window.postMessage({type:"cameraView", dataURL: reader.result}, "*");
+        // wichtig: an den Parent schicken
+        parent.postMessage({type:"cameraView", dataURL: reader.result}, "*");
       };
       reader.readAsDataURL(blob);
     });
