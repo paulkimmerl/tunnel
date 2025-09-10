@@ -180,19 +180,21 @@ function updateTunnel(time){
   lights.forEach(l => l.update(delta));
 }
 
-// --- PostMessage & Query-Zugriff ---
+// --- PostMessage für CameraView ---
 window.addEventListener("message", (event) => {
-  if(event.data.type === "updateTexture") {
-    const loader = new THREE.TextureLoader();
-    loader.load(event.data.url, tex => {
-      boxMat.map = tex;
-      boxMat.needsUpdate = true;
-      console.log("Texture aktualisiert via PostMessage");
+  if(event.data.type === "getCameraView") {
+    renderer.domElement.toBlob(blob => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // send back the image as data URL
+        window.postMessage({type:"cameraView", dataURL: reader.result}, "*");
+      };
+      reader.readAsDataURL(blob);
     });
   }
 });
 
-// Beispiel: allgemeiner Query-Zugriff auf Szene
+// allgemeiner Query-Zugriff auf Szene
 window.getSceneObjects = () => {
   return scene.children;
 };
